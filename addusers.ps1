@@ -9,8 +9,9 @@ Import-Module ActiveDirectory -ErrorAction SilentlyContinue
 $dnsroot = '@' + (Get-ADDomain).dnsroot
 
 #import the file containing new user account data and assign
-$users = Import-Csv .\NewADUsers.csv
+$users = Import-Csv .\newusers.csv
 
+#iterate over the list
 foreach ($user in $users)
 {
 	$newSamAccountName = $user.Username
@@ -22,9 +23,15 @@ foreach ($user in $users)
 		-Enabled $true -ChangePasswordAtLogon $true -PasswordNeverExpires  $false `
 		-AccountPassword (ConvertTo-SecureString $user.Password -AsPlainText -force) -PassThru `
 		
+		echo "-----------------------------------" >> listOfUsers.txt
+		echo  $user.Firstname $user.Lastname $user.Username >> listOfUsers.txt
+		echo "-----------------------------------" >> listOfUsers.txt
 	}
 	else
 	{
-		echo "The Active directory account "$user.Username" is already registered to "$user.Firstname" "$user.Lastname""
+		echo "----------------------------------------------------------------------------------------------------"
+		echo The Active directory account $user.Username is already registered to $user.Firstname $user.Lastname
+		echo "----------------------------------------------------------------------------------------------------"
+		
 	}
 }
